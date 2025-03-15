@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+body {
+  background-color: #030712;
+  min-width: 500px;
+}
+
+/* Word Analysis Tabs */
+.word-analysis-tabs {
+  .ant-tabs-nav {
+    @apply mb-6;
+
+    &::before {
+      @apply border-white/5;
+    }
+
+    .ant-tabs-nav-list {
+      @apply w-full justify-between;
+
+      .ant-tabs-tab {
+        @apply m-0 py-3 opacity-70 transition-all duration-300;
+
+        &:hover {
+          @apply opacity-100;
+        }
+
+        &.ant-tabs-tab-active {
+          @apply opacity-100;
+
+          .ant-tabs-tab-btn {
+            @apply text-blue-500;
+          }
+        }
+      }
+    }
+  }
+
+  .ant-tabs-ink-bar {
+    @apply bg-blue-500;
+  }
+}
+
+@media (max-width: 768px) {
+  .body {
+    width: 90%; /* Nhỏ hơn trên mobile */
+    min-width: 280px; /* Giữ không quá nhỏ */
+  }
+}
