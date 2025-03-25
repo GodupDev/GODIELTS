@@ -279,9 +279,9 @@ const Header = ({ searchedData }) => {
 
   const menu = (isHorizontal = false) => (
     <Menu
-      {...(isHorizontal ? { mode: "horizontal" } : {})}
+      mode="horizontal"
       selectedKeys={[currentKey]}
-      className="xl:!bg-transparent !bg-[#374151] !border-none flex-1 justify-start max-w-none overflow-x-auto"
+      className="xl:!bg-transparent !bg-[#374151] !border-none flex-1 justify-start max-w-none overflow-x-auto overflow-y-hidden items-center"
       items={menuItems.map((item) => ({
         key: item.key,
         label: (
@@ -289,7 +289,8 @@ const Header = ({ searchedData }) => {
             whileHover={{ scale: 1.05 }}
             className="text-sm font-medium tracking-wide whitespace-nowrap"
             onClick={() => {
-              setCurrentPage(item.path), setSearchedData("");
+              setCurrentPage(item.path);
+              setSearchedData("");
             }}
           >
             {item.label}
