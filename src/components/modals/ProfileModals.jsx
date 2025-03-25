@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { AppContext } from "../../store/AppContext";
 import {
   Modal,
   Form,
@@ -9,98 +10,76 @@ import {
   DatePicker,
   Radio,
   Spin,
+  Upload,
 } from "antd";
 import { motion } from "framer-motion";
-import {
-  auth,
-  updateData,
-  updateProfile,
-  getData,
-  addData,
-} from "../../store/services/firebase";
+import { UploadOutlined } from "@ant-design/icons";
+import { auth, updateData, updateProfile } from "../../store/services/firebase";
+import { uploadImage } from "../../store/services/cloudinary";
 import dayjs from "dayjs";
 
 const { Text } = Typography;
 
-// Hàm kiểm tra quyền truy cập Firestore
-const checkAuthUser = () => {
-  if (!auth.currentUser) {
-    console.error("User not authenticated!");
-    message.error("Bạn cần đăng nhập để thực hiện thao tác này.");
-    return false;
-  }
-  return true;
-};
-
-// Hàm lấy dữ liệu hồ sơ
-const fetchProfileData = async (user, setProfile, form) => {
-  if (!user) return;
-  try {
-    const profileData = await getData(`usersProfile/${user.uid}`);
-    if (profileData) {
-      setProfile(profileData);
-      form.setFieldsValue({
-        displayName: profileData.displayName || "",
-        dob: profileData.dob ? dayjs(profileData.dob) : null,
-        gender: profileData.gender || "",
-        email: user.email || "",
-        phone: profileData.phone || "",
-        address: profileData.address || "",
-      });
-    } else {
-      await initializeProfileData(user, setProfile, form);
-    }
-  } catch (error) {
-    console.error("Error fetching profile:", error);
-    message.error("Failed to load profile data");
-  }
-};
-
-// Hàm khởi tạo hồ sơ mới nếu chưa có
-const initializeProfileData = async (user, setProfile, form) => {
-  if (!user) return;
-  try {
-    const defaultProfile = {
-      displayName: user.displayName || "",
-      email: user.email || "",
-      dob: null,
-      gender: "",
-      phone: "",
-      address: "",
-    };
-    await addData(`usersProfile/${user.uid}`, defaultProfile);
-    setProfile(defaultProfile);
-    form.setFieldsValue(defaultProfile);
-  } catch (error) {
-    console.error("Error initializing profile:", error);
-    message.error("Failed to initialize profile data");
-  }
-};
-
 const ProfileModal = ({ visible, onCancel }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-  const [profile, setProfile] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const { profile, setProfile } = useContext(AppContext);
 
   useEffect(() => {
-    if (visible && auth.currentUser) {
-      setLoading(true);
-      fetchProfileData(auth.currentUser, setProfile, form).finally(() =>
-        setLoading(false),
-      );
+    if (visible && profile) {
+      form.setFieldsValue({
+        displayName: profile.displayName || "",
+        dob: profile.dob ? dayjs(profile.dob) : null,
+        gender: profile.gender || "male",
+        email: profile.email || "",
+        phone: profile.phone || "",
+        address: profile.address || "",
+      });
     }
-  }, [visible, auth.currentUser]);
+  }, [visible, profile, form]);
 
+  useEffect(() => {
+    return () => {
+      if (imageFile) {
+        URL.revokeObjectURL(imageFile.preview);
+      }
+    };
+  }, [imageFile]);
+
+  console.log(form.getFieldsValue());
   const handleSubmit = async (values) => {
     try {
       setLoading(true);
-      await updateProfile(auth.currentUser, {
-        displayName: values.displayName,
-      });
-      await updateData(`usersProfile/${auth.currentUser.uid}`, {
+      const formattedValues = {
         ...values,
         dob: values.dob ? dayjs(values.dob).format("YYYY-MM-DD") : null,
+      };
+
+      // Update Firebase Authentication display name
+      await updateProfile(auth.currentUser, {
+        displayName: formattedValues.displayName,
       });
+
+      // Upload image if selected
+      let avatarUrl = profile?.avatar?.url || "";
+      if (imageFile) {
+        avatarUrl = await uploadImage(imageFile);
+      }
+
+      // Final profile data to update both Database and AppContext
+      const updatedProfile = {
+        ...profile,
+        ...formattedValues,
+        avatar: { url: avatarUrl },
+      };
+
+      // Update Database
+      await updateData(`usersProfile/${auth.currentUser.uid}`, updatedProfile);
+
+      // Update context once, clean and optimized
+      setProfile(updatedProfile);
+
       message.success("Profile updated successfully!");
       onCancel();
     } catch (error) {
@@ -109,6 +88,12 @@ const ProfileModal = ({ visible, onCancel }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleUpload = ({ file }) => {
+    file.preview = URL.createObjectURL(file);
+    setImageFile(file);
+    message.success("Avatar uploaded successfully!");
   };
 
   return (
@@ -125,37 +110,67 @@ const ProfileModal = ({ visible, onCancel }) => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="px-6 py-8"
+          className="px-6 py-4"
         >
           <Form form={form} onFinish={handleSubmit} layout="vertical">
+            <div className="flex flex-col items-center mb-4">
+              <img
+                src={
+                  imageFile
+                    ? imageFile.preview
+                    : profile?.avatar?.url ||
+                      "https://via.placeholder.com/96x96?text=Avatar"
+                }
+                alt="Avatar Preview"
+                className="rounded-full object-cover border border-gray-700 w-24 h-24 mb-2"
+              />
+              <Upload
+                showUploadList={false}
+                beforeUpload={() => false}
+                onChange={handleUpload}
+                accept="image/*"
+              >
+                <Button
+                  icon={<UploadOutlined />}
+                  className="bg-blue-500 text-white mt-2"
+                >
+                  Chọn ảnh
+                </Button>
+              </Upload>
+            </div>
+
             <Form.Item
               label={<Text className="text-gray-400">Họ và tên</Text>}
               name="displayName"
+              rules={[{ required: true, message: "Vui lòng nhập họ và tên" }]}
             >
               <Input className="bg-gray-800 border-gray-700 text-white" />
             </Form.Item>
 
-            <Form.Item
-              label={<Text className="text-gray-400">Ngày sinh</Text>}
-              name="dob"
-            >
-              <DatePicker
-                format="DD/MM/YYYY"
-                getPopupContainer={(trigger) => trigger.parentNode}
-                className="w-full"
-              />
-            </Form.Item>
+            <div className="flex gap-4">
+              <Form.Item
+                label={<Text className="text-gray-400">Ngày sinh</Text>}
+                name="dob"
+                className="flex-1"
+              >
+                <DatePicker
+                  format="DD/MM/YYYY"
+                  className="w-full bg-gray-800 border-gray-700 text-white"
+                />
+              </Form.Item>
 
-            <Form.Item
-              label={<Text className="text-gray-400">Giới tính</Text>}
-              name="gender"
-            >
-              <Radio.Group className="bg-gray-800 border-gray-700 text-white">
-                <Radio value="male">Nam</Radio>
-                <Radio value="female">Nữ</Radio>
-                <Radio value="other">Khác</Radio>
-              </Radio.Group>
-            </Form.Item>
+              <Form.Item
+                label={<Text className="text-gray-400">Giới tính</Text>}
+                name="gender"
+                className="flex-1"
+              >
+                <Radio.Group className="text-white">
+                  <Radio value="male">Nam</Radio>
+                  <Radio value="female">Nữ</Radio>
+                  <Radio value="other">Khác</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </div>
 
             <Form.Item
               label={<Text className="text-gray-400">Địa chỉ Email</Text>}

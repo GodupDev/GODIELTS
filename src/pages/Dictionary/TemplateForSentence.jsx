@@ -29,7 +29,6 @@ const TemplateForSentence = () => {
     };
   }, [searchedData, debouncedAnalyze]);
 
-  console.log(sentenceData);
 
   if (loading) {
     return (

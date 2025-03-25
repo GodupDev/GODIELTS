@@ -9,8 +9,19 @@ export const AppProvider = ({ children }) => {
   const [searchedData, setSearchedData] = useState("");
   const [currentLanguage, setCurrentLanguage] = useState("en-US");
   const [favouriteWords, setFavouriteWords] = useState([]);
-  const [myPostsData, setMyPostsData] = useState([]);
+  const [postsData, setPostsData] = useState([]);
+  const [tipsData, setTipsData] = useState([]);
   const [currentPage, setCurrentPage] = useState("/");
+  const [profile, setProfile] = useState({
+    userID: null,
+    displayName: null,
+    phone: null,
+    dob: null,
+    email: null,
+    avatar: { public_id: null, url: null },
+    gender: "",
+    address: null,
+  });
 
   return (
     <AppContext.Provider
@@ -25,10 +36,14 @@ export const AppProvider = ({ children }) => {
         setCurrentLanguage,
         favouriteWords,
         setFavouriteWords,
-        myPostsData,
-        setMyPostsData,
+        postsData,
+        setPostsData,
+        tipsData,
+        setTipsData,
         currentPage,
         setCurrentPage,
+        profile,
+        setProfile,
       }}
     >
       {children}

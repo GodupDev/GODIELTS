@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Card,
   Button,
@@ -9,87 +9,113 @@ import {
   Empty,
   Tabs,
   Form,
-  Typography,
+  Select,
+  message,
 } from "antd";
 import { motion } from "framer-motion";
-import { UploadOutlined, UserOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 import PostCard from "../../components/ui/Post/Post";
 import TipCard from "../../components/ui/Post/Tip";
-import { tipData, postData } from "../../store/data/examplesData";
+import { AppContext } from "../../store/AppContext";
+import { updateData } from "../../store/services/firebase";
+import { uploadImage } from "../../store/services/cloudinary";
 
 const { TextArea } = Input;
 const { TabPane } = Tabs;
-const { Title, Text } = Typography;
 
-// Ảnh đại diện mặc định
-const LOGO = "https://via.placeholder.com/150";
-
-/* 🎯 Hook quản lý posts */
+/* 🎯 Hook for managing posts */
 const usePosts = () => {
-  const [posts, setPosts] = useState([postData]);
+  const { profile, postsData, setPostsData } = useContext(AppContext);
 
-  const addPost = (content, image) => {
-    if (!content.trim() && !image) return;
-    setPosts([
-      {
-        id: Date.now(),
-        author: "Admin",
-        avatar: LOGO,
-        content,
-        image,
-        timestamp: new Date().toISOString(),
-        likes: 0,
-        comments: [],
-      },
-      ...posts,
-    ]);
+  const addPost = async (content, image) => {
+    if (!content.trim()) return;
+
+    const newPost = {
+      id: `${profile.userID}_${Date.now()}`,
+      uid: profile.userID,
+      author: profile.displayName,
+      avatar: profile.avatar.url,
+      content,
+      image,
+      timestamp: new Date().toISOString(),
+      likes: [],
+      comments: [],
+      status: false,
+    };
+
+    const updatedPosts = [newPost, ...postsData];
+    setPostsData(updatedPosts);
+
+    await updateData(`severData/postsData`, { postsData: updatedPosts });
   };
 
-  return { posts, addPost };
+  const userPostsData = postsData.filter((e) => e.uid === profile.userID);
+  return { userPostsData, addPost };
 };
 
-/* 🎯 Hook quản lý tips */
+/* 🎯 Hook for managing tips */
 const useTips = () => {
-  const [tips, setTips] = useState([tipData]);
+  const { profile, tipsData, setTipsData } = useContext(AppContext);
 
-  const addTip = (title, type, content, references) => {
+  const addTip = async (title, type, content, references) => {
     if (!title.trim() || !content.trim()) return;
-    setTips([
-      {
-        id: Date.now(),
-        type: type || "General",
-        author: "IELTS Mentor",
-        title,
-        content,
-        references: references
-          .split(",")
-          .map((ref) => ref.trim())
-          .filter((ref) => ref),
-        timestamp: new Date().toISOString(),
-      },
-      ...tips,
-    ]);
+
+    const newTip = {
+      id: `${profile.userID}_${Date.now()}`,
+      uid: profile.userID,
+      type: type || "Others",
+      author: profile.displayName,
+      title,
+      content,
+      references: references
+        .split(",")
+        .map((ref) => ref.trim())
+        .filter((ref) => ref),
+      timestamp: new Date().toISOString(),
+      status: false,
+    };
+
+    const updatedTips = [newTip, ...tipsData];
+    setTipsData(updatedTips);
+
+    await updateData(`severData/tipsData`, { tipsData: updatedTips });
   };
 
-  return { tips, addTip };
+  const userTipsData = tipsData.filter((e) => e.uid === profile.userID);
+  return { userTipsData, addTip };
 };
 
-/* 📝 Component: Form đăng bài */
-const PostForm = ({ onPostCreate }) => {
+/* 📝 Post Creation Form */
+const PostForm = ({ onPostCreate, profile }) => {
   const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);
+  const [imageFile, setImage] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleImageUpload = (file) => {
+    const isImage = file.type.startsWith("image/");
+    if (!isImage) {
+      message.error("You can only upload image files!");
+      return false;
+    }
     const reader = new FileReader();
     reader.onload = (e) => setImage(e.target.result);
     reader.readAsDataURL(file);
     return false;
   };
 
+  const handleSubmit = async () => {
+    setLoading(true);
+    const image = await uploadImage(imageFile);
+    await onPostCreate(content, image);
+    setContent("");
+    setImage(null);
+    setLoading(false);
+  };
+
   return (
     <Card className="shadow-md rounded-lg p-4">
       <div className="flex items-start gap-4">
-        <Avatar src={LOGO} />
+        <Avatar src={profile.avatar.url} />
         <TextArea
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -104,13 +130,18 @@ const PostForm = ({ onPostCreate }) => {
             <Button icon={<UploadOutlined />}>Upload Image</Button>
           </Upload>
         </Space>
-        <Button type="primary" onClick={() => onPostCreate(content, image)}>
+        <Button
+          type="primary"
+          onClick={handleSubmit}
+          loading={loading}
+          disabled={!content.trim()}
+        >
           Post
         </Button>
       </div>
-      {image && (
+      {imageFile && (
         <img
-          src={image}
+          src={imageFile}
           alt="Uploaded"
           className="mt-4 rounded-lg max-h-40 mx-auto"
         />
@@ -119,14 +150,22 @@ const PostForm = ({ onPostCreate }) => {
   );
 };
 
-/* 🎯 Component: Form tạo tip */
+/* 🎯 Tip Creation Form */
 const TipForm = ({ onTipCreate }) => {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = () => {
-    form.validateFields().then((values) => {
-      onTipCreate(values.title, values.type, values.content, values.references);
+    form.validateFields().then(async (values) => {
+      setLoading(true);
+      await onTipCreate(
+        values.title,
+        values.type,
+        values.content,
+        values.references,
+      );
       form.resetFields();
+      setLoading(false);
     });
   };
 
@@ -146,9 +185,14 @@ const TipForm = ({ onTipCreate }) => {
             >
               <Input placeholder="Enter tip title" />
             </Form.Item>
-
             <Form.Item label="Type" name="type">
-              <Input placeholder="e.g., Listening, Writing" />
+              <Select placeholder="Select type">
+                <Select.Option value="listening">Listening</Select.Option>
+                <Select.Option value="writing">Writing</Select.Option>
+                <Select.Option value="reading">Reading</Select.Option>
+                <Select.Option value="speaking">Speaking</Select.Option>
+                <Select.Option value="others">Others</Select.Option>
+              </Select>
             </Form.Item>
           </div>
 
@@ -163,15 +207,15 @@ const TipForm = ({ onTipCreate }) => {
             />
           </Form.Item>
 
-          <Form.Item label="References (enter-separated)" name="references">
+          <Form.Item label="References (comma-separated)" name="references">
             <TextArea
-              placeholder={"e.g., https://example.com \nhttps://ref.com"}
+              placeholder="e.g., https://example.com, https://ref.com"
               autoSize={{ minRows: 3, maxRows: 5 }}
             />
           </Form.Item>
 
           <div className="flex justify-end">
-            <Button type="primary" onClick={handleSubmit}>
+            <Button type="primary" onClick={handleSubmit} loading={loading}>
               Add Tip
             </Button>
           </div>
@@ -181,29 +225,46 @@ const TipForm = ({ onTipCreate }) => {
   );
 };
 
-/* 🎯 Component chính */
+/* 🎯 Main Component */
 const ManagePostsTips = () => {
-  const { posts, addPost } = usePosts();
-  const { tips, addTip } = useTips();
+  const { userPostsData, addPost } = usePosts();
+  const { userTipsData, addTip } = useTips();
+  const { user, profile } = useContext(AppContext);
+
+  if (!user) return <div>Please log in to see the content.</div>;
 
   return (
     <Tabs defaultActiveKey="posts">
       <TabPane tab="Posts" key="posts">
-        <PostForm onPostCreate={addPost} />
-        <div className="pt-[4%] pb-[10%]">
-          {posts.length ? (
-            posts.map((post) => <PostCard key={post.id} post={post} />)
+        <PostForm onPostCreate={addPost} profile={profile} />
+        <div className="flex flex-col pt-[4%] pb-[10%] max-w-4xl mx-auto space-y-6 gap-y-3">
+          {userPostsData.length ? (
+            userPostsData.map((post) => (
+              <PostCard
+                key={post.id}
+                post={post}
+                isEdit={true}
+                isDelete={true}
+              />
+            ))
           ) : (
             <Empty description="No posts available" />
           )}
         </div>
       </TabPane>
+
       <TabPane tab="Tips" key="tips">
         <TipForm onTipCreate={addTip} />
         <div className="pt-[4%] pb-[10%]">
-          {tips.length ? (
-            tips.map((tip, index) => (
-              <TipCard key={tip.id} tip={tip} index={index} />
+          {userTipsData.length ? (
+            userTipsData.map((tip, index) => (
+              <TipCard
+                key={tip.id}
+                tip={tip}
+                index={index}
+                isEdit={true}
+                isDelete={true}
+              />
             ))
           ) : (
             <Empty description="No tips available" />

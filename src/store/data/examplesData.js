@@ -1,6 +1,6 @@
 import LogoIELTS from "../../assets/images/GodIELTS.png";
 
-const profileData = {
+export const sampleProfileData = {
   avatar: "", //default avatar from cloudinary
   displayName: "TIen",
   email: "",
@@ -10,7 +10,7 @@ const profileData = {
   address: "",
 };
 
-const wordData = {
+export const sampleWordData = {
   level: "",
   type: "",
   generalDescription: "",
@@ -84,7 +84,7 @@ const wordData = {
   ],
 };
 
-const sampleSentenceData = {
+export const sampleSentenceData = {
   basicInformation: {
     sentence: "Tiến đẹp trai nhất vũ trụ",
     meaning: "",
@@ -99,7 +99,7 @@ const sampleSentenceData = {
   ],
 };
 
-const tipData = {
+export const sampleTipData = {
   id: Date.now(),
   type: "listening",
   author: "IELTS Mentor",
@@ -109,26 +109,16 @@ const tipData = {
   references: ["https://www.bbc.co.uk/learningenglish", "https://www.ted.com"],
   status: true,
   timestamp: "2024-03-13T10:15:30Z",
-  responseFromServer: "",
 };
 
-const postData = {
+export const samplePostData = {
   id: Date.now(),
   author: "Admin",
   avatar: LogoIELTS, //default avatar from cloudinary
   content: "Wellcome to GODIELT",
   image: LogoIELTS, //image from cloudinary
   timestamp: new Date().toISOString(),
-  likes: "∞",
-  comments: [
-    {
-      userID: "1",
-      content: "This is great post",
-      timestamp: new Date().toISOString(),
-    },
-  ],
+  likes: [],
+  comments: [],
   status: false,
-  responseFromServer: "",
 };
-
-export { profileData, wordData, sampleSentenceData, tipData, postData };

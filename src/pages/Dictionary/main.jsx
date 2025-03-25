@@ -42,7 +42,6 @@ const Dictionary = () => {
   const getFavouriteWord = async () => {
     if (user) {
       const data = await getData(`userData/${auth.currentUser.uid}`);
-      console.log(data);
       setFavouriteWords(data.list || []);
     } // Đảm bảo không bị undefined/null
   };
@@ -55,7 +54,6 @@ const Dictionary = () => {
     if (user) getFavouriteWord();
   }, [favouriteWords]);
 
-  console.log(loading, !searchedData?.trim(), checkTypeOfSearchedData);
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">

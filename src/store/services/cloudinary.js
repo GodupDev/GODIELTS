@@ -1,47 +1,53 @@
-import { Cloudinary } from "cloudinary-core";
+export const uploadImage = async (file, customPath = "", public_id = "") => {
+  if (public_id) {
+    deleteImage(public_id);
+  }
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", "godielts-avatar");
 
-// Configure Cloudinary
-const cloudinary = new Cloudinary({
-  cloud_name: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
-});
+  if (customPath) {
+    formData.append("public_id", customPath);
+  }
 
-// Upload image
-const uploadImage = async (file, uploadPreset) => {
   try {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", uploadPreset);
-
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${
-        import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
-      }/image/upload`,
+      "https://api.cloudinary.com/v1_1/djthxaxtd/image/upload",
       {
         method: "POST",
         body: formData,
       },
     );
+
     if (!response.ok) throw new Error("Upload failed");
-    return await response.json();
+
+    const data = await response.json();
+    return { public_id: data.public_id, url: data.url };
   } catch (error) {
     console.error("Upload failed:", error);
   }
 };
 
-// Fetch images
-const getImages = async (folderPath) => {
-  try {
-    const url = `https://res.cloudinary.com/${
-      import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
-    }/image/list/${folderPath}.json`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Fetch failed");
-    return await response.json();
-  } catch (error) {
-    console.error("Fetch failed:", error);
-  }
-};
+export const deleteImage = async (publicId) => {
+  const formData = new FormData();
+  formData.append("public_id", publicId);
+  formData.append("upload_preset", "godielts-avatar");
 
-export const log = () => {
-  console.log("ok");
+  try {
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/djthxaxtd/image/destroy",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
+
+    if (!response.ok) throw new Error("Delete failed");
+
+    const data = await response.json();
+    return data.result === "ok";
+  } catch (error) {
+    console.error("Delete failed:", error);
+    return false;
+  }
 };

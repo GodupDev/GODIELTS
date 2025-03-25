@@ -12,13 +12,10 @@ import MyPosts from "./pages/PostManage/main";
 import { ConfigProvider, theme } from "antd";
 import { AppContext } from "./store/AppContext";
 import { useNavigate } from "react-router-dom";
-import { log } from "./store/services/cloudinary";
 
 const App = () => {
   const navigate = useNavigate();
   const { currentPage, setCurrentPage } = useContext(AppContext);
-
-  log();
 
   useEffect(() => {
     navigate(currentPage);

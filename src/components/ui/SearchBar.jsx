@@ -2,20 +2,22 @@ import { Input } from "antd";
 import { useContext, useState } from "react";
 import IconSearch from "../icon/IconSearch";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../store/AppContext";
 
 const SearchBar = () => {
   const [tempData, setTempData] = useState("");
   const [isFocused, setIsFocused] = useState(false);
-  const { setSearchedData, searchedData } = useContext(AppContext);
-  const navigate = useNavigate();
+  const { setSearchedData, searchedData, setCurrentPage, currentPage } =
+    useContext(AppContext);
 
   const handleSearch = (value) => {
     const formattedValue = value
       .trim()
       .replace(/(^\w|\s\w)/g, (match) => match.toUpperCase());
-    navigate("/dictionary");
+    if (["/", "/Dictionary"].includes(currentPage)) {
+      setCurrentPage("/Dictionary");
+    }
+    console.log(currentPage);
     setSearchedData(formattedValue);
   };
 

@@ -2,7 +2,7 @@ import { useState, useEffect, useContext, useRef, useCallback } from "react";
 import { Typography } from "antd";
 import { motion } from "framer-motion";
 import { MainContentWord } from "../../components/ui/Word/MainContent/Main";
-import { wordData } from "../../store/data/examplesData";
+import { sampleWordData } from "../../store/data/examplesData";
 import AdditionalInformation from "../../components/ui/Word/AdditionalInformation";
 import LoadingState from "../../components/ui/shared/LoadingState";
 import { AppContext } from "../../store/AppContext";
@@ -14,7 +14,7 @@ const { Text } = Typography;
 const TemplateForWord = () => {
   const { searchedData } = useContext(AppContext);
   const word = searchedData?.trim().toLowerCase() || "";
-  const [wordData, setWordData] = useState(sampleBasicInfo);
+  const [wordData, setWordData] = useState(sampleWordData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

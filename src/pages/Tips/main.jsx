@@ -1,15 +1,24 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Tabs, Card, Tag, Button } from "antd";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlusOutlined } from "@ant-design/icons";
-import { tipData } from "../../store/data/examplesData";
+import { sampleTipData } from "../../store/data/examplesData";
 import TipCard from "../../components/ui/Post/Tip";
+import { AppContext } from "../../store/AppContext";
 
 const { TabPane } = Tabs;
 
 const TipsPage = () => {
   const [activeTab, setActiveTab] = useState("all");
-  const [tips, setTips] = useState([tipData]);
+  const { tipsData, searchedData } = useContext(AppContext);
+
+  const filteredTipsData = tipsData.filter((tip) => {
+    return searchedData !== ""
+      ? tip.content.includes(searchedData) ||
+          tip.author.includes(searchedData) ||
+          tip.title.includes(searchedData)
+      : true;
+  });
 
   const categories = [
     { key: "all", label: "All", color: "#94A3B8" }, // Xám xanh trung tính
@@ -40,16 +49,20 @@ const TipsPage = () => {
               key={category.key}
             >
               <AnimatePresence>
-                <div className="">
-                  {tips
+                {filteredTipsData.filter(
+                  (tip) => category.key === "all" || tip.type === category.key,
+                ).length === 0 ? (
+                  <div className="text-white text-center py-4">
+                    No tips match
+                  </div>
+                ) : (
+                  filteredTipsData
                     .filter(
                       (tip) =>
                         category.key === "all" || tip.type === category.key,
                     )
-                    .map((tip, index) => (
-                      <TipCard key={tip.id} tip={tip} />
-                    ))}
-                </div>
+                    .map((tip) => <TipCard key={tip.id} tip={tip} />)
+                )}
               </AnimatePresence>
             </TabPane>
           ))}

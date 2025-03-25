@@ -5,8 +5,6 @@ import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const HomePage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const features = [
     {
