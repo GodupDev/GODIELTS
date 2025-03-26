@@ -7,9 +7,10 @@ import React, {
   useState,
   useRef,
 } from "react";
+import PropTypes from "prop-types";
 
 // Routing
-import { useLocation, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 // Animation and date handling
 import { motion } from "framer-motion";
@@ -17,33 +18,15 @@ import dayjs from "dayjs";
 
 // Context and Firebase services
 import { AppContext } from "../../store/AppContext";
-import {
-  logout,
-  getData,
-  addData,
-  updateData,
-  auth,
-} from "../../store/services/firebase";
+import { logout, getData, addData, auth } from "../../store/services/firebase";
 
 // UI Components and Ant Design
-import {
-  Image,
-  Menu,
-  Tooltip,
-  Drawer,
-  message,
-  Button,
-  Input,
-  Space,
-  Dropdown,
-  Form,
-} from "antd";
+import { Image, Menu, Tooltip, message, Button, Dropdown } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 
 // Local assets and components
 import LogoIELTS from "../../assets/images/GodIELTS.png";
 import SearchBar from "../ui/SearchBar";
-import IconAdaptive from "../icon/IconAdaptive";
 import IconUser from "../icon/IconUser";
 import IconLanguage from "../icon/IconLanguage";
 import AuthModals from "../modals/AuthModals";
@@ -59,7 +42,7 @@ const menuItems = [
 ];
 
 // Header component with navigation and user interface
-const Header = ({ searchedData }) => {
+const Header = () => {
   // Supported languages for the application
   const languages = useMemo(
     () => [
@@ -95,8 +78,7 @@ const Header = ({ searchedData }) => {
     profile,
     setPostsData,
     setTipsData,
-    postsData,
-    tipsData,
+    searchedData,
     setSearchedData,
   } = useContext(AppContext);
 
@@ -255,31 +237,34 @@ const Header = ({ searchedData }) => {
     menuItems.find((item) => item.path === location.pathname)?.key || "home";
 
   const TooltipButton = React.forwardRef(
-    ({ children, tooltip, onClick, className }, ref) => (
-      <Tooltip
-        placement="bottom"
-        title={tooltip}
-        classNames={{ root: "tooltip-overlay" }}
-        arrow={{ pointAtCenter: true }}
-        color="rgba(0, 0, 0, 0.85)"
-      >
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onClick}
-          className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/70 hover:text-white/90 transition-all duration-300 flex items-center justify-center ${className}`}
-          aria-label={tooltip}
-          role="button"
-        >
-          {children}
-        </motion.button>
-      </Tooltip>
-    ),
+    ({ children, tooltip, onClick, className }, ref) => {
+      return (
+        <Tooltip placement="bottom" title={tooltip}>
+          <motion.button
+            ref={ref}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onClick}
+            className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white/70 hover:text-white/90 transition-all duration-300 flex items-center justify-center ${className}`}
+          >
+            {children}
+          </motion.button>
+        </Tooltip>
+      );
+    },
   );
 
-  const menu = (isHorizontal = false) => (
+  TooltipButton.displayName = "TooltipButton";
+  TooltipButton.propTypes = {
+    children: PropTypes.node.isRequired,
+    tooltip: PropTypes.string.isRequired,
+    onClick: PropTypes.func,
+    className: PropTypes.string,
+  };
+
+  const menu = (horizontal = false) => (
     <Menu
-      mode="horizontal"
+      mode={horizontal ? "horizontal" : "vertical"}
       selectedKeys={[currentKey]}
       className="xl:!bg-transparent !bg-[#374151] !border-none flex-1 justify-start max-w-none overflow-x-auto overflow-y-hidden items-center"
       items={menuItems.map((item) => ({
@@ -306,24 +291,24 @@ const Header = ({ searchedData }) => {
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className={`sticky top-0 left-0  w-full z-50 ${
+      className={`sticky top-0 left-0 w-full z-50 ${
         uiState.isScrolled ? "shadow-xl backdrop-blur-sm" : ""
-      }`}
+      } bg-[#101727]`}
     >
       {/* Gradient Background */}
       <div
-        className={`absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900/98 to-gray-900/95 backdrop-blur-xl border-b border-white/5 transition-all duration-300 ${
+        className={`w-full absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900/98 to-gray-900/95 backdrop-blur-xl border-b border-white/5 transition-all duration-300 ${
           uiState.isScrolled ? "!via-gray-900/95 !to-gray-900/90" : ""
         }`}
       />
 
       {/* Main Content */}
-      <div className="relative container mx-auto px-4 sm:px-6">
-        <div className="h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
+      <div className="w-full relative max-w mx-auto sm:px-6 !pl-5 pr-5">
+        <div className="h-20 flex items-center justify-between gap-4 sm:gap-8">
           {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.02 }}
-            className="flex items-center gap-2 sm:gap-3 group cursor-pointer shrink-0"
+            className="flex items-center gap-3 sm:gap-5 group cursor-pointer shrink-0"
             onClick={() => setCurrentPage("/")}
           >
             <div className="relative flex items-center justify-center">
@@ -331,7 +316,7 @@ const Header = ({ searchedData }) => {
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-indigo-500/30 rounded-full blur-2xl group-hover:from-blue-500/40 group-hover:to-indigo-500/40 transition-all duration-300" />
 
               {/* Logo Container */}
-              <div className="relative w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 p-[3px]">
+              <div className="relative w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 p-[3px]">
                 {/* Logo Image */}
                 <div className="w-full h-full rounded-full border border-white/10 overflow-hidden bg-gray-900 flex justify-center items-center">
                   <Image
@@ -340,7 +325,7 @@ const Header = ({ searchedData }) => {
                     preview={false}
                     width={90}
                     height={50}
-                    className="hover:scale-110 transition-transform duration-300 w-[50px] h-[35px] sm:w-[60px] sm:h-[40px] md:w-[70px] md:h-[50px]"
+                    className="hover:scale-110 transition-transform duration-300 sm:w-[70px] sm:h-[50px]"
                   />
                 </div>
               </div>
@@ -348,10 +333,10 @@ const Header = ({ searchedData }) => {
 
             {/* Logo Text */}
             <div className="flex flex-col group-hover:translate-x-1 transition-transform duration-300">
-              <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold tracking-wide bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent mb-0 leading-none">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-wide bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent mb-0 leading-none">
                 GODIELTS
               </h1>
-              <p className="text-[10px] sm:text-[11px] md:text-[13px] font-medium text-white/50 group-hover:text-white/70 transition-colors mt-1">
+              <p className="text-[11px] sm:text-[13px] font-medium text-white/50 group-hover:text-white/70 transition-colors mt-1.5">
                 Master IELTS Easily
               </p>
             </div>
@@ -362,8 +347,8 @@ const Header = ({ searchedData }) => {
           </div>
 
           {/* Search and Actions */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hidden xl:block w-[300px] sm:w-[400px]">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="hidden xl:block w-[400px]">
               <SearchBar
                 setSearchedData={setSearchedData}
                 searchedData={searchedData}
@@ -371,7 +356,7 @@ const Header = ({ searchedData }) => {
             </div>
 
             <div>
-              <div className="flex gap-1 sm:gap-2 md:gap-3 items-center">
+              <div className="flex gap-2 sm:gap-3 items-center">
                 {user ? (
                   <div>
                     <div ref={profileRef}>
@@ -389,13 +374,13 @@ const Header = ({ searchedData }) => {
                           <img
                             src={profile?.avatar.url}
                             alt="Avatar Preview"
-                            className="rounded-full object-cover border border-gray-700 w-6 h-6 sm:w-7 sm:h-7"
+                            className="rounded-full object-cover border border-gray-700 w-7 h-7"
                           />
                         ) : (
                           <IconUser />
                         )}
                         {uiState.profileMenuOpen && (
-                          <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/10 overflow-hidden z-50">
+                          <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/10 overflow-hidden">
                             {profileUI.map(({ code, item, onClick }) => (
                               <div
                                 key={code}
@@ -422,13 +407,33 @@ const Header = ({ searchedData }) => {
                     />
                   </div>
                 ) : (
-                  <Button
-                    type="primary"
-                    className="!bg-blue-500 hover:!bg-blue-600 !border-none"
-                    onClick={() => navigate("/login")}
-                  >
-                    Login
-                  </Button>
+                  <>
+                    <div className="flex gap-2">
+                      <Button onClick={showLogin} className="">
+                        Login
+                      </Button>
+
+                      <Button onClick={showRegister} className="">
+                        Register
+                      </Button>
+                    </div>
+                    <AuthModals
+                      loginVisible={uiState.loginVisible}
+                      registerVisible={uiState.registerVisible}
+                      setLoginVisible={(visible) =>
+                        setUiState((prev) => ({
+                          ...prev,
+                          loginVisible: visible,
+                        }))
+                      }
+                      setRegisterVisible={(visible) =>
+                        setUiState((prev) => ({
+                          ...prev,
+                          registerVisible: visible,
+                        }))
+                      }
+                    />
+                  </>
                 )}
                 <div ref={languageRef}>
                   <TooltipButton
@@ -494,7 +499,7 @@ const Header = ({ searchedData }) => {
             </div>
           </div>
         </div>
-        <div className="block xl:hidden w-full pb-3">
+        <div className="block xl:hidden  w-full pb-3">
           <SearchBar
             setSearchedData={setSearchedData}
             searchedData={searchedData}

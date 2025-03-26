@@ -1,12 +1,28 @@
 @import "tailwindcss";
 
+/* RESET - Fix lỗi tràn viền */
+html,
 body {
   background-color: #030712;
-  min-width: 280px;
+  width: 100%;
   overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
-/* Word Analysis Tabs */
+* {
+  box-sizing: border-box;
+}
+
+/* Optional: Wrapper container cho content chính */
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Word Analysis Tabs - Custom Ant Design Tabs */
 .word-analysis-tabs {
   .ant-tabs-nav {
     @apply mb-6;
@@ -41,25 +57,15 @@ body {
   }
 }
 
-/* Responsive styles */
+/* Responsive Styles - Chỉ padding cho container hoặc content */
 @media (max-width: 768px) {
-  body {
-    padding: 0 1rem;
-  }
-
   .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding: 0 1rem;
   }
 }
 
 @media (max-width: 480px) {
-  body {
-    padding: 0 0.5rem;
-  }
-
   .container {
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
+    padding: 0 0.5rem;
   }
 }
