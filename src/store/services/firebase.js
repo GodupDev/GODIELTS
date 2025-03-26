@@ -16,7 +16,7 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: "AIzaSyBN-v9-FgIqsuDsAxwRKf59vFe9_iX-MJo",
   authDomain: "godielts.firebaseapp.com",
   databaseURL: "https://godielts-default-rtdb.firebaseio.com",
   projectId: "godielts",
