@@ -1,11 +1,11 @@
-import React from "react";
-import { Button, Card, Row, Col } from "antd";
+import { Card, Row, Col } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useContext } from "react";
+import { AppContext } from "../../store/AppContext";
 
 const HomePage = () => {
-
+  const { setCurrentPage } = useContext(AppContext);
   const features = [
     {
       title: "Dictionary",
@@ -70,7 +70,7 @@ const HomePage = () => {
               >
                 <Card
                   className="h-50 bg-gray-900/50 border border-white/10 flex flex-col cursor-pointer"
-                  onClick={() => navigate(feature.path)}
+                  onClick={() => setCurrentPage(feature.path)}
                 >
                   <div className="text-center flex-grow flex flex-col justify-center">
                     <div className="text-3xl text-blue-500 mb-4">
