@@ -318,12 +318,12 @@ const Header = ({ searchedData }) => {
       />
 
       {/* Main Content */}
-      <div className="relative container mx-auto sm:px-6 !pl-5">
-        <div className="h-20 flex items-center justify-between gap-4 sm:gap-8">
+      <div className="relative container mx-auto px-4 sm:px-6">
+        <div className="h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
           {/* Logo */}
           <motion.div
             whileHover={{ scale: 1.02 }}
-            className="flex items-center gap-3 sm:gap-5 group cursor-pointer shrink-0"
+            className="flex items-center gap-2 sm:gap-3 group cursor-pointer shrink-0"
             onClick={() => setCurrentPage("/")}
           >
             <div className="relative flex items-center justify-center">
@@ -331,7 +331,7 @@ const Header = ({ searchedData }) => {
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-indigo-500/30 rounded-full blur-2xl group-hover:from-blue-500/40 group-hover:to-indigo-500/40 transition-all duration-300" />
 
               {/* Logo Container */}
-              <div className="relative w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 p-[3px]">
+              <div className="relative w-8 h-8 sm:w-10 sm:h-10 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 p-[3px]">
                 {/* Logo Image */}
                 <div className="w-full h-full rounded-full border border-white/10 overflow-hidden bg-gray-900 flex justify-center items-center">
                   <Image
@@ -340,7 +340,7 @@ const Header = ({ searchedData }) => {
                     preview={false}
                     width={90}
                     height={50}
-                    className="hover:scale-110 transition-transform duration-300 sm:w-[70px] sm:h-[50px]"
+                    className="hover:scale-110 transition-transform duration-300 w-[50px] h-[35px] sm:w-[60px] sm:h-[40px] md:w-[70px] md:h-[50px]"
                   />
                 </div>
               </div>
@@ -348,10 +348,10 @@ const Header = ({ searchedData }) => {
 
             {/* Logo Text */}
             <div className="flex flex-col group-hover:translate-x-1 transition-transform duration-300">
-              <h1 className="text-xl sm:text-2xl font-extrabold tracking-wide bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent mb-0 leading-none">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-extrabold tracking-wide bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent mb-0 leading-none">
                 GODIELTS
               </h1>
-              <p className="text-[11px] sm:text-[13px] font-medium text-white/50 group-hover:text-white/70 transition-colors mt-1.5">
+              <p className="text-[10px] sm:text-[11px] md:text-[13px] font-medium text-white/50 group-hover:text-white/70 transition-colors mt-1">
                 Master IELTS Easily
               </p>
             </div>
@@ -362,8 +362,8 @@ const Header = ({ searchedData }) => {
           </div>
 
           {/* Search and Actions */}
-          <div className="flex items-center gap-2 sm:gap-4">
-            <div className="hidden xl:block w-[400px]">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden xl:block w-[300px] sm:w-[400px]">
               <SearchBar
                 setSearchedData={setSearchedData}
                 searchedData={searchedData}
@@ -371,7 +371,7 @@ const Header = ({ searchedData }) => {
             </div>
 
             <div>
-              <div className="flex gap-2 sm:gap-3 items-center">
+              <div className="flex gap-1 sm:gap-2 md:gap-3 items-center">
                 {user ? (
                   <div>
                     <div ref={profileRef}>
@@ -389,13 +389,13 @@ const Header = ({ searchedData }) => {
                           <img
                             src={profile?.avatar.url}
                             alt="Avatar Preview"
-                            className="rounded-full object-cover border border-gray-700 w-7 h-7"
+                            className="rounded-full object-cover border border-gray-700 w-6 h-6 sm:w-7 sm:h-7"
                           />
                         ) : (
                           <IconUser />
                         )}
                         {uiState.profileMenuOpen && (
-                          <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/10 overflow-hidden">
+                          <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/10 overflow-hidden z-50">
                             {profileUI.map(({ code, item, onClick }) => (
                               <div
                                 key={code}
@@ -422,33 +422,13 @@ const Header = ({ searchedData }) => {
                     />
                   </div>
                 ) : (
-                  <>
-                    <div className="flex gap-2">
-                      <Button onClick={showLogin} className="">
-                        Login
-                      </Button>
-
-                      <Button onClick={showRegister} className="">
-                        Register
-                      </Button>
-                    </div>
-                    <AuthModals
-                      loginVisible={uiState.loginVisible}
-                      registerVisible={uiState.registerVisible}
-                      setLoginVisible={(visible) =>
-                        setUiState((prev) => ({
-                          ...prev,
-                          loginVisible: visible,
-                        }))
-                      }
-                      setRegisterVisible={(visible) =>
-                        setUiState((prev) => ({
-                          ...prev,
-                          registerVisible: visible,
-                        }))
-                      }
-                    />
-                  </>
+                  <Button
+                    type="primary"
+                    className="!bg-blue-500 hover:!bg-blue-600 !border-none"
+                    onClick={() => navigate("/login")}
+                  >
+                    Login
+                  </Button>
                 )}
                 <div ref={languageRef}>
                   <TooltipButton
@@ -514,7 +494,7 @@ const Header = ({ searchedData }) => {
             </div>
           </div>
         </div>
-        <div className="block xl:hidden  w-full pb-3">
+        <div className="block xl:hidden w-full pb-3">
           <SearchBar
             setSearchedData={setSearchedData}
             searchedData={searchedData}

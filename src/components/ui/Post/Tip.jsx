@@ -41,7 +41,7 @@ const TipCard = ({
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 min-w-fit">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-4 sm:mt-6 min-w-fit">
       <motion.div
         key={tip.id || index}
         initial={{ opacity: 0, y: 20 }}
@@ -57,7 +57,7 @@ const TipCard = ({
               <Button
                 type="text"
                 icon={<EditOutlined />}
-                className="text-yellow-400"
+                className="text-yellow-400 text-xs sm:text-sm"
                 onClick={() => setIsModalOpen(true)}
               >
                 Edit
@@ -70,7 +70,12 @@ const TipCard = ({
                 okText="Yes"
                 cancelText="No"
               >
-                <Button type="text" icon={<DeleteOutlined />} danger>
+                <Button
+                  type="text"
+                  icon={<DeleteOutlined />}
+                  danger
+                  className="text-xs sm:text-sm"
+                >
                   Delete
                 </Button>
               </Popconfirm>
@@ -78,21 +83,23 @@ const TipCard = ({
           ]}
         >
           <div className="flex justify-between">
-            <h4 className="text-white">{tip.author || "Unknown"}</h4>
-            <h4 className="text-white/70 text-sm">
+            <h4 className="text-white text-sm sm:text-base">
+              {tip.author || "Unknown"}
+            </h4>
+            <h4 className="text-white/70 text-xs sm:text-sm">
               {new Date(tip.timestamp).toLocaleDateString()}
             </h4>
           </div>
 
           {/* ✅ Hiển thị Type */}
-          <p className="text-blue-400 text-sm mt-1">
+          <p className="text-blue-400 text-xs sm:text-sm mt-1">
             {tip.type?.toUpperCase()}
           </p>
 
-          <h3 className="text-xl font-semibold text-white mt-5 mb-2">
+          <h3 className="text-lg sm:text-xl font-semibold text-white mt-3 sm:mt-5 mb-2">
             {tip.title}
           </h3>
-          <p className="text-white/60">{tip.content}</p>
+          <p className="text-white/60 text-sm sm:text-base">{tip.content}</p>
 
           {/* ✅ Hiển thị References */}
           {tip.references?.length > 0 && (

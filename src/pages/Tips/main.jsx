@@ -30,10 +30,12 @@ const TipsPage = () => {
   ];
 
   return (
-    <div className="">
+    <div className="px-2 sm:px-4 md:px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-white">IELTS Tips</h1>
+        <div className="flex justify-between items-center mb-4 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+            IELTS Tips
+          </h1>
         </div>
         <Tabs activeKey={activeTab} onChange={setActiveTab} className="w-full">
           {categories.map((category) => (
@@ -41,7 +43,7 @@ const TipsPage = () => {
               tab={
                 <Tag
                   color={category.color}
-                  className="px-4 py-1 text-sm font-medium"
+                  className="px-2 sm:px-4 py-1 text-xs sm:text-sm font-medium"
                 >
                   {category.label}
                 </Tag>

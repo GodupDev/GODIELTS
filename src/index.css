@@ -2,7 +2,8 @@
 
 body {
   background-color: #030712;
-  min-width: 500px;
+  min-width: 280px;
+  overflow-x: hidden;
 }
 
 /* Word Analysis Tabs */
@@ -40,9 +41,25 @@ body {
   }
 }
 
+/* Responsive styles */
 @media (max-width: 768px) {
-  .body {
-    width: 90%; /* Nhỏ hơn trên mobile */
-    min-width: 280px; /* Giữ không quá nhỏ */
+  body {
+    padding: 0 1rem;
+  }
+
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 0 0.5rem;
+  }
+
+  .container {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }

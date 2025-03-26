@@ -94,7 +94,7 @@ const PostCard = ({ post, isDelete = false, isEdit = false }) => {
                 <Button
                   icon={<EditOutlined />}
                   type="text"
-                  className="text-gray-300 hover:text-yellow-400"
+                  className="text-gray-300 hover:text-yellow-400 text-xs sm:text-sm"
                   onClick={() => setIsEditModalVisible(true)}
                 >
                   Edit
@@ -111,7 +111,7 @@ const PostCard = ({ post, isDelete = false, isEdit = false }) => {
                     icon={<DeleteOutlined />}
                     type="text"
                     danger
-                    className="text-gray-300 hover:text-red-500"
+                    className="text-gray-300 hover:text-red-500 text-xs sm:text-sm"
                   >
                     Delete
                   </Button>
@@ -121,7 +121,9 @@ const PostCard = ({ post, isDelete = false, isEdit = false }) => {
           </div>
 
           {/* Content */}
-          <p className="mt-4 text-gray-300">{post.content}</p>
+          <p className="mt-4 text-gray-300 text-sm sm:text-base">
+            {post.content}
+          </p>
 
           {/* Image */}
           {post.image && (
@@ -129,7 +131,7 @@ const PostCard = ({ post, isDelete = false, isEdit = false }) => {
               <Image
                 src={post.image.url}
                 alt="Post"
-                className="rounded-xl w-full max-h-96 object-cover"
+                className="rounded-xl w-full max-h-[200px] sm:max-h-96 object-cover"
                 fallback="https://via.placeholder.com/150"
                 preview={{ mask: "Click to enlarge" }}
               />

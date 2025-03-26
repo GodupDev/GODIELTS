@@ -14,12 +14,14 @@ const ForumPage = () => {
   });
 
   return (
-    <div className="min-h-screen p-2">
-      <div className="flex flex-col pt-[1%] pb-[5%] max-w-4xl mx-auto space-y-6 gap-y-3">
+    <div className="min-h-screen px-2 sm:px-4 md:px-6">
+      <div className="flex flex-col pt-[1%] pb-[5%] max-w-4xl mx-auto space-y-4 sm:space-y-6 gap-y-3">
         {filteredPostsData.length > 0 ? (
           filteredPostsData.map((post) => <Post key={post.id} post={post} />)
         ) : (
-          <div>No matching posts yet</div>
+          <div className="text-white text-center py-4">
+            No matching posts yet
+          </div>
         )}
       </div>
     </div>
