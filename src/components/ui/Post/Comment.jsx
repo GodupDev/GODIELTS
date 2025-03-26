@@ -26,7 +26,7 @@ const CommentSection = ({ comments, onAddComment }) => {
       <h4 className="text-lg font-semibold">Comments</h4>
       {comments.map((comment, index) => (
         <div key={index} className="flex items-start gap-3 mt-3">
-          <Avatar src={comment.avatar} />
+          <Avatar src={comment.avatar.url} />
           <div className="bg-gray-700/50 p-3 rounded-lg w-full">
             <p className="text-white">{comment.content}</p>
             <span className="text-gray-400 text-xs">
