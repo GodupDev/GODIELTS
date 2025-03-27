@@ -490,7 +490,7 @@ const Header = () => {
                           key: "login",
                           onClick: () => showLogin(),
                           label: (
-                            <span className="text-blue-500 font-bold">
+                            <span className=" text-blue-500 font-bold">
                               Login
                             </span>
                           ),
@@ -502,12 +502,12 @@ const Header = () => {
                     onOpenChange={(newOpen) =>
                       setUiState((prev) => ({ ...prev, open: newOpen }))
                     }
-                    overlayClassName="bg-gray-800 border-gray-600 rounded-lg text-white"
+                    overlayClassName="bg-gray-800 border-gray-600 rounded-lg text-white !mt-[10px]"
                   >
                     <span>
                       <Button
                         icon={<MenuOutlined />}
-                        className="!bg-gray-800 !text-white !border-gray-600 hover:!bg-blue-600"
+                        className="!bg-gray-800 !text-white !border-gray-600 hover:!bg-blue-600 "
                       />
                     </span>
                   </Dropdown>

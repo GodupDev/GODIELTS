@@ -56,7 +56,7 @@ const App = () => {
             <Route path="/tips" element={<TipsPage />} />
             <Route path="/forum" element={<ForumPage />} />
             <Route path="/postmanage" element={<MyPosts />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={setCurrentPage("/")} />
           </Routes>
         </main>
         <Footer />

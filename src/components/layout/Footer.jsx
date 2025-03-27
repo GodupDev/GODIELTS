@@ -13,7 +13,7 @@ const Footer = () => {
 
         <div className="flex justify-center space-x-3 sm:space-x-4 mt-2 sm:mt-3">
           <a
-            href="nguyentrongtiendev06@gmail.com"
+            href="https://mail.google.com"
             className="transform hover:scale-110 transition-transform"
           >
             <IconSocialMedia socialMedia="Gmail" />
