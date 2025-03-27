@@ -478,39 +478,35 @@ const Header = () => {
                 </TooltipButton> */}
                 {/* Mobile Menu */}
                 <div className="xl:hidden">
-                  <Dropdown
-                    menu={{
-                      items: [
-                        ...menuItems.map((item) => ({
-                          key: item.key,
-                          onClick: () => handleMenuClick(item.path),
-                          label: item.label,
-                        })),
-                        {
-                          key: "login",
-                          onClick: () => showLogin(),
-                          label: (
-                            <span className=" text-blue-500 font-bold">
-                              Login
-                            </span>
-                          ),
-                        },
-                      ],
-                    }}
-                    trigger={["click"]}
-                    open={uiState.open}
-                    onOpenChange={(newOpen) =>
-                      setUiState((prev) => ({ ...prev, open: newOpen }))
-                    }
-                    overlayClassName="bg-gray-800 border-gray-600 rounded-lg text-white !mt-[10px]"
-                  >
-                    <span>
-                      <Button
-                        icon={<MenuOutlined />}
-                        className="!bg-gray-800 !text-white !border-gray-600 hover:!bg-blue-600 "
-                      />
-                    </span>
-                  </Dropdown>
+                  <span>
+                    {uiState.open && (
+                      <div className="absolute right-0 mt-0 mt-[42px] mr-[24px] w-48 bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/10 overflow-hidden">
+                        {/* Thêm các menu items vào đây */}
+                        {menuItems.map((item) => (
+                          <div
+                            key={item.key}
+                            onClick={() => handleMenuClick(item.path)}
+                            className="block px-4 py-2 hover:bg-gray-700 cursor-pointer text-white"
+                          >
+                            {item.label}
+                          </div>
+                        ))}
+                        <div
+                          onClick={() => showLogin()}
+                          className="block px-4 py-2 hover:bg-gray-700 cursor-pointer text-blue-500 font-semibold"
+                        >
+                          Login
+                        </div>
+                      </div>
+                    )}
+                    <Button
+                      icon={<MenuOutlined />}
+                      className="!bg-gray-800 !text-white !border-gray-600 hover:!bg-blue-600 "
+                      onClick={() =>
+                        setUiState((prev) => ({ ...prev, open: !prev.open }))
+                      } // Thêm onClick
+                    />
+                  </span>
                 </div>
               </div>
             </div>
