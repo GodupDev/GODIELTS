@@ -48,7 +48,7 @@ const App = () => {
     >
       <div className="flex flex-col h-[100vh] min-w-2.5 bg-gray-950 text-white/90">
         <Header />
-        <main className="pt-5 flex-grow container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+        <main className="pt-5 flex-grow container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl !mt-5 !mb-5">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/dictionary" element={<Dictionary />} />
@@ -56,7 +56,7 @@ const App = () => {
             <Route path="/tips" element={<TipsPage />} />
             <Route path="/forum" element={<ForumPage />} />
             <Route path="/postmanage" element={<MyPosts />} />
-            <Route path="*" element={setCurrentPage("/")} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
         <Footer />

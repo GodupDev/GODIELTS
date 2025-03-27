@@ -67,6 +67,8 @@ const Header = () => {
     loading: false,
   });
 
+  console.log(uiState.open);
+
   // Context values for app-wide state
   const {
     currentLanguage,
@@ -266,6 +268,7 @@ const Header = () => {
     setCurrentPage(path);
     setSearchedData("");
   };
+
   const renderMenu = (horizontal = false) => (
     <Menu
       mode={horizontal ? "horizontal" : "vertical"}
@@ -355,6 +358,7 @@ const Header = () => {
               <SearchBar
                 setSearchedData={setSearchedData}
                 searchedData={searchedData}
+                hiddenClear={false}
               />
             </div>
 
@@ -473,40 +477,38 @@ const Header = () => {
                     )}
                   </TooltipButton>
                 </div>
-                {/* <TooltipButton onClick={() => {}} className="">
-                  <IconAdaptive />
-                </TooltipButton> */}
-                {/* Mobile Menu */}
                 <div className="xl:hidden">
-                  <span>
-                    {uiState.open && (
-                      <div className="absolute right-0 mt-0 mt-[42px] mr-[24px] w-48 bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/10 overflow-hidden">
-                        {/* Thêm các menu items vào đây */}
-                        {menuItems.map((item) => (
+                  <TooltipButton tooltip="Menu" className="relative">
+                    <span>
+                      {uiState.open && (
+                        <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/10 overflow-hidden">
+                          {/* Thêm các menu items vào đây */}
+                          {menuItems.map((item) => (
+                            <div
+                              key={item.key}
+                              onClick={() => handleMenuClick(item.path)}
+                              className="block px-4 py-2 hover:bg-gray-700 cursor-pointer text-white"
+                            >
+                              {item.label}
+                            </div>
+                          ))}
                           <div
-                            key={item.key}
-                            onClick={() => handleMenuClick(item.path)}
-                            className="block px-4 py-2 hover:bg-gray-700 cursor-pointer text-white"
+                            onClick={() => showLogin()}
+                            className="block px-4 py-2 hover:bg-gray-700 cursor-pointer text-blue-500 font-semibold"
                           >
-                            {item.label}
+                            Login
                           </div>
-                        ))}
-                        <div
-                          onClick={() => showLogin()}
-                          className="block px-4 py-2 hover:bg-gray-700 cursor-pointer text-blue-500 font-semibold"
-                        >
-                          Login
                         </div>
-                      </div>
-                    )}
-                    <Button
-                      icon={<MenuOutlined />}
-                      className="!bg-gray-800 !text-white !border-gray-600 hover:!bg-blue-600 "
-                      onClick={() =>
-                        setUiState((prev) => ({ ...prev, open: !prev.open }))
-                      } // Thêm onClick
-                    />
-                  </span>
+                      )}
+                      <Button
+                        icon={<MenuOutlined />}
+                        className="!bg-gray-800 !text-white !border-gray-600 hover:!bg-blue-600 "
+                        onClick={() =>
+                          setUiState((prev) => ({ ...prev, open: !prev.open }))
+                        } // Thêm onClick
+                      />
+                    </span>
+                  </TooltipButton>
                 </div>
               </div>
             </div>
@@ -516,6 +518,7 @@ const Header = () => {
           <SearchBar
             setSearchedData={setSearchedData}
             searchedData={searchedData}
+            hiddenClear={uiState.open}
           />
         </div>
       </div>

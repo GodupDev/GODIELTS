@@ -4,7 +4,7 @@ import IconSearch from "../icon/IconSearch";
 import { motion } from "framer-motion";
 import { AppContext } from "../../store/AppContext";
 
-const SearchBar = () => {
+const SearchBar = ({ hiddenClear = true }) => {
   const [tempData, setTempData] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const { setSearchedData, searchedData, setCurrentPage, currentPage } =
@@ -21,6 +21,7 @@ const SearchBar = () => {
     setSearchedData(formattedValue);
   };
 
+  const clearIcon = hiddenClear ? <div></div> : <div>×</div>; // Conditional rendering
   return (
     <motion.div
       initial={{ scale: 0.95, opacity: 0 }}
@@ -40,9 +41,9 @@ const SearchBar = () => {
     >
       <IconSearch
         className={`
-        ${isFocused ? "text-white/90" : "text-white/60"} 
-        transition-colors duration-300 text-sm
-      `}
+          ${isFocused ? "text-white/90" : "text-white/60"} 
+          transition-colors duration-300 text-sm
+        `}
       />
 
       <Input
@@ -54,11 +55,7 @@ const SearchBar = () => {
         "
         placeholder="Search..."
         allowClear={{
-          clearIcon: (
-            <span className="text-white/50 hover:text-white/90 transition-colors">
-              ×
-            </span>
-          ),
+          clearIcon: clearIcon, // Sử dụng clearIcon đã được xử lý
         }}
         value={tempData}
         onChange={(e) => setTempData(e.target.value)}
