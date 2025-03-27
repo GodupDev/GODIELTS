@@ -374,6 +374,7 @@ const Header = () => {
                             ...prev,
                             profileMenuOpen: !prev.profileMenuOpen,
                             languageMenuOpen: false,
+                            open: false,
                           }))
                         }
                         className="relative"
@@ -447,6 +448,7 @@ const Header = () => {
                         ...prev,
                         languageMenuOpen: !prev.languageMenuOpen,
                         profileMenuOpen: false,
+                        open: false,
                       }))
                     }
                     className="relative"
@@ -478,7 +480,19 @@ const Header = () => {
                   </TooltipButton>
                 </div>
                 <div className="xl:hidden">
-                  <TooltipButton tooltip="Menu" className="relative">
+                  <TooltipButton
+                    tooltip="Menu"
+                    className="relative"
+                    onClick={() =>
+                      setUiState((prev) => ({
+                        ...prev,
+                        languageMenuOpen: false,
+                        profileMenuOpen: false,
+                        open: !prev.open,
+                      }))
+                    }
+                  >
+                    <MenuOutlined />
                     <span>
                       {uiState.open && (
                         <div className="absolute top-full right-0 mt-2 w-48 bg-gray-800/95 backdrop-blur-sm rounded-xl shadow-xl border border-white/10 overflow-hidden">
@@ -500,13 +514,6 @@ const Header = () => {
                           </div>
                         </div>
                       )}
-                      <Button
-                        icon={<MenuOutlined />}
-                        className="!bg-gray-800 !text-white !border-gray-600 hover:!bg-blue-600 "
-                        onClick={() =>
-                          setUiState((prev) => ({ ...prev, open: !prev.open }))
-                        } // Thêm onClick
-                      />
                     </span>
                   </TooltipButton>
                 </div>

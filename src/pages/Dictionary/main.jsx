@@ -7,7 +7,6 @@ import { debounce, flatMap } from "lodash";
 import { useContext } from "react";
 import { AppContext } from "../../store/AppContext";
 import { fetchDataTypeOfText, handleError } from "../../utils/dataUtils";
-import PropTypes from "prop-types";
 import { getData, auth } from "../../store/services/firebase";
 
 const fadeVariants = {
@@ -43,7 +42,7 @@ const Dictionary = () => {
     if (user) {
       const data = await getData(`userData/${auth.currentUser.uid}`);
       setFavouriteWords(data.list || []);
-    } // Đảm bảo không bị undefined/null
+    }
   };
 
   useEffect(() => {
