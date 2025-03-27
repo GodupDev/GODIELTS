@@ -1,9 +1,9 @@
-const IconSocialMedia = ({ socialMedia }) => {
+const IconSocialMedia = ({ socialMedia, size = 50 }) => {
   const icons = {
     Gmail: (
       <svg
-        width="50px"
-        height="50px"
+        width={size}
+        height={size}
         viewBox="0 0 32 32"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -48,8 +48,8 @@ const IconSocialMedia = ({ socialMedia }) => {
     Facebook: (
       <>
         <svg
-          width="50px"
-          height="50px"
+          width={size}
+          height={size}
           viewBox="0 0 32 32"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -88,8 +88,8 @@ const IconSocialMedia = ({ socialMedia }) => {
     Linkedin: (
       <>
         <svg
-          width="50px"
-          height="50px"
+          width={size}
+          height={size}
           viewBox="0 0 48 48"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
