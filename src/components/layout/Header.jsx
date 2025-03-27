@@ -262,7 +262,11 @@ const Header = () => {
     className: PropTypes.string,
   };
 
-  const menu = (horizontal = false) => (
+  const handleMenuClick = (path) => {
+    setCurrentPage(path);
+    setSearchedData("");
+  };
+  const renderMenu = (horizontal = false) => (
     <Menu
       mode={horizontal ? "horizontal" : "vertical"}
       selectedKeys={[currentKey]}
@@ -274,8 +278,7 @@ const Header = () => {
             whileHover={{ scale: 1.05 }}
             className="text-sm font-medium tracking-wide whitespace-nowrap"
             onClick={() => {
-              setCurrentPage(item.path);
-              setSearchedData("");
+              handleMenuClick(item.path);
             }}
           >
             {item.label}
@@ -343,7 +346,7 @@ const Header = () => {
           </motion.div>
 
           <div>
-            <div className="hidden flex-1 xl:block">{menu(true)}</div>
+            <div className="hidden flex-1 xl:block">{renderMenu(true)}</div>
           </div>
 
           {/* Search and Actions */}
@@ -361,6 +364,7 @@ const Header = () => {
                   <div>
                     <div ref={profileRef}>
                       <TooltipButton
+                        tooltip="Profile"
                         onClick={() =>
                           setUiState((prev) => ({
                             ...prev,
@@ -408,15 +412,11 @@ const Header = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="flex gap-2">
-                      <Button onClick={showLogin} className="">
-                        Login
-                      </Button>
-
-                      <Button onClick={showRegister} className="">
-                        Register
-                      </Button>
+                    <div className="hidden sm:flex gap-2">
+                      <Button onClick={showLogin}>Login</Button>
+                      <Button onClick={showRegister}>Register</Button>
                     </div>
+
                     <AuthModals
                       loginVisible={uiState.loginVisible}
                       registerVisible={uiState.registerVisible}
@@ -437,6 +437,7 @@ const Header = () => {
                 )}
                 <div ref={languageRef}>
                   <TooltipButton
+                    tooltip="Language"
                     onClick={() =>
                       setUiState((prev) => ({
                         ...prev,
@@ -459,10 +460,6 @@ const Header = () => {
                             role="button"
                             tabIndex={0}
                             onClick={() => handleLanguageChange(language.code)}
-                            onKeyPress={(e) =>
-                              e.key === "Enter" &&
-                              handleLanguageChange(language.code)
-                            }
                             className="w-full px-4 py-2 text-left text-sm text-white/80 hover:bg-white/5 hover:text-white transition-colors duration-200 flex items-center gap-2"
                           >
                             {language.flag && <span>{language.flag}</span>}
@@ -482,17 +479,37 @@ const Header = () => {
                 {/* Mobile Menu */}
                 <div className="xl:hidden">
                   <Dropdown
-                    overlay={menu()}
+                    menu={{
+                      items: [
+                        ...menuItems.map((item) => ({
+                          key: item.key,
+                          onClick: () => handleMenuClick(item.path),
+                          label: item.label,
+                        })),
+                        {
+                          key: "login",
+                          onClick: () => showLogin(),
+                          label: (
+                            <span className="text-blue-500 font-bold">
+                              Login
+                            </span>
+                          ),
+                        },
+                      ],
+                    }}
                     trigger={["click"]}
                     open={uiState.open}
                     onOpenChange={(newOpen) =>
                       setUiState((prev) => ({ ...prev, open: newOpen }))
                     }
+                    overlayClassName="bg-gray-800 border-gray-600 rounded-lg text-white"
                   >
-                    <Button
-                      icon={<MenuOutlined />}
-                      className="!bg-transparent text-white border-none"
-                    />
+                    <span>
+                      <Button
+                        icon={<MenuOutlined />}
+                        className="!bg-gray-800 !text-white !border-gray-600 hover:!bg-blue-600"
+                      />
+                    </span>
                   </Dropdown>
                 </div>
               </div>

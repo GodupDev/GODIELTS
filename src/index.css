@@ -69,3 +69,7 @@ body {
     padding: 0 0.5rem;
   }
 }
+
+.ant-menu-overflow-item-rest {
+  display: none !important;
+}
