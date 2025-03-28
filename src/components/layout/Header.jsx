@@ -67,9 +67,6 @@ const Header = () => {
     loading: false,
   });
 
-  console.log(uiState.open);
-
-  // Context values for app-wide state
   const {
     currentLanguage,
     setCurrentLanguage,

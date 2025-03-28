@@ -1,13 +1,14 @@
-import TemplateForSentence from "./TemplateForSentence";
-import TemplateForWord from "./TemplateForWord";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback, useContext, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingState from "../../components/ui/shared/LoadingState";
-import { debounce, flatMap } from "lodash";
-import { useContext } from "react";
+import { debounce } from "lodash";
 import { AppContext } from "../../store/AppContext";
-import { fetchDataTypeOfText, handleError } from "../../utils/dataUtils";
+import { fetchDataTypeOfText } from "../../utils/dataUtils";
 import { getData, auth } from "../../store/services/firebase";
+import { Alert } from "antd";
+
+import TemplateForWord from "./TemplateForWord";
+import TemplateForSentence from "./TemplateForSentence";
 
 const fadeVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -38,13 +39,6 @@ const Dictionary = () => {
     }, 300),
   ).current;
 
-  const getFavouriteWord = async () => {
-    if (user) {
-      const data = await getData(`userData/${auth.currentUser.uid}`);
-      setFavouriteWords(data.list || []);
-    }
-  };
-
   useEffect(() => {
     debouncedAnalyze(searchedData);
   }, [searchedData]);
@@ -53,10 +47,35 @@ const Dictionary = () => {
     if (user) getFavouriteWord();
   }, [favouriteWords]);
 
+  const getFavouriteWord = useCallback(async () => {
+    if (user && auth.currentUser) {
+      setLoading(true); // Set loading to true before fetching data.
+      setError(null); // Reset error state.
+      try {
+        const data = await getData(`userData/${auth.currentUser.uid}`);
+        setFavouriteWords(data.list || []);
+      } catch (err) {
+        setError(err.message || "Failed to fetch favorite words.");
+      } finally {
+        setLoading(false);
+      }
+    }
+  }, [user, setFavouriteWords]);
+
+  useEffect(() => {
+    if (searchedData) {
+      debouncedAnalyze(searchedData);
+    }
+  }, [searchedData, debouncedAnalyze]);
+
+  useEffect(() => {
+    if (user) getFavouriteWord();
+  }, [user, getFavouriteWord]);
+
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800">
-        <Text className="text-red-400 text-lg">{error}</Text>
+        <Alert message={error} type="error" />
       </div>
     );
   }

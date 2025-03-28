@@ -5,36 +5,58 @@ import ListSynonymsAntonyms from "./ListSynonymsAntonyms";
 import ListWordForms from "./ListWordForms";
 import BasicInformation from "./BasicInformation";
 
-const { TabPane } = Tabs;
+export const MainContentWord = ({ wordData = {} }) => {
+  if (!wordData.word) return <div />;
 
-// MainContentWord component to display word details in a tabbed layout
-export const MainContentWord = ({ word, data = {} }) => {
+  const basicInformationData = {
+    word: wordData.word,
+    level: wordData.level || "N/A",
+    type: wordData.type || "N/A",
+    ipaTranscription: wordData.ipaTranscription || { UK: "N/A", US: "N/A" },
+    meanings: wordData.meanings || [],
+  };
+
+  const tabItems = [
+    {
+      key: "wordForms",
+      label: "Word Forms",
+      component: <ListWordForms wordformData={wordData.wordForms || []} />,
+    },
+    {
+      key: "collocations",
+      label: "Collocations",
+      component: (
+        <ListCollocation collocationsData={wordData.collocations || []} />
+      ),
+    },
+    {
+      key: "synonymsAntonyms",
+      label: "Synonyms & Antonyms",
+      component: (
+        <ListSynonymsAntonyms
+          listSynonymsAntonymsData={wordData.synonymsAntonyms || []}
+        />
+      ),
+    },
+    {
+      key: "idioms",
+      label: "Idioms",
+      component: <ListIdioms listIdiomsData={wordData.idioms || []} />,
+    },
+  ];
+
   return (
     <div className="w-full flex flex-col gap-5">
-      {/* Basic information section */}
-      <BasicInformation word={word} data={data} />
-
-      {/* Tabbed navigation for different word details */}
-      <Tabs defaultActiveKey="0" className="custom-tabs !text-white">
-        <TabPane tab={<span className="!text-white">Word Forms</span>} key="4">
-          <ListWordForms word={word} data={data.wordForms} />
-        </TabPane>
-        <TabPane
-          tab={<span className="!text-white">Collocations</span>}
-          key="1"
-        >
-          <ListCollocation word={word} data={data.collocations} />
-        </TabPane>
-        <TabPane
-          tab={<span className="!text-white">Synonyms & Antonyms</span>}
-          key="3"
-        >
-          <ListSynonymsAntonyms word={word} data={data.synonymsAntonyms} />
-        </TabPane>
-        <TabPane tab={<span className="!text-white">Idioms</span>} key="2">
-          <ListIdioms word={word} data={data.idioms} />
-        </TabPane>
-      </Tabs>
+      <BasicInformation basicInformationData={basicInformationData} />
+      <Tabs
+        defaultActiveKey="1"
+        className="custom-tabs text-white"
+        items={tabItems.map(({ key, label, component }) => ({
+          key,
+          label: <span>{label}</span>,
+          children: component,
+        }))}
+      />
     </div>
   );
 };

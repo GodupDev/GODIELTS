@@ -8,23 +8,15 @@ import { AppContext } from "../../../../store/AppContext";
 import { addData, auth } from "../../../../store/services/firebase";
 
 const { Text } = Typography;
-const { TabPane } = Tabs;
 
-const BasicInformation = ({ word, data = {} }) => {
-  if (!word) {
-    return <Alert message="Please enter a word" type="info" />;
-  }
-
-  const wordData = {
-    word: data?.word || word,
-    level: data?.level || "N/A",
-    type: data?.type || "N/A",
-    ipaTranscription: data?.ipaTranscription || { UK: "N/A", US: "N/A" },
-    meanings: data?.meanings || [],
-  };
-
+const BasicInformation = ({ basicInformationData }) => {
+  const word = basicInformationData.word;
   const { favouriteWords, setFavouriteWords, user } = useContext(AppContext);
   const [isFavourite, setIsFavourite] = useState(favouriteWords.includes(word));
+
+  useEffect(() => {
+    setIsFavourite(favouriteWords.includes(word));
+  }, [favouriteWords, word]);
 
   const handleFavouriteClick = () => {
     setIsFavourite((prev) => {
@@ -35,7 +27,9 @@ const BasicInformation = ({ word, data = {} }) => {
           ? [...prevWords, word]
           : prevWords.filter((w) => w !== word);
 
-        addData(`userData/${auth.currentUser.uid}`, updatedWords);
+        if (user && auth.currentUser) {
+          addData(`userData/${auth.currentUser.uid}`, updatedWords);
+        }
 
         return updatedWords;
       });
@@ -50,16 +44,19 @@ const BasicInformation = ({ word, data = {} }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="!bg-gradient-to-r from-[#2e3134]/80 to-[#1e1e1e]/80 !border-none !shadow-lg hover:!shadow-xl transition-shadow duration-300">
+      <Card
+        className="!bg-gradient-to-r from-[#2e3134]/80 to-[#1e1e1e]/80 !border-none !shadow-lg hover:!shadow-xl transition-shadow duration-300"
+        key={"1"}
+      >
         <div className="flex items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
             <h1 className="text-white text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-              {wordData.word.replace(/(^\w|\s\w)/g, (match) =>
+              {basicInformationData.word.replace(/(^\w|\s\w)/g, (match) =>
                 match.toUpperCase(),
               )}
             </h1>
             <span className="px-3 py-1 text-lg font-bold border-2 border-blue-400 rounded-full text-blue-400 bg-blue-400/10">
-              {wordData.level}
+              {basicInformationData.level}
             </span>
           </div>
           <div
@@ -76,7 +73,7 @@ const BasicInformation = ({ word, data = {} }) => {
 
         <div className="flex items-center gap-3 mb-6">
           <span className="px-3 py-1 text-sm font-bold text-green-400 border-2 border-green-400 rounded-full bg-green-400/10">
-            {wordData.type}
+            {basicInformationData.type}
           </span>
           <div className="flex-1 h-1 bg-gradient-to-r from-green-400 to-blue-400 rounded-full" />
         </div>
@@ -93,7 +90,8 @@ const BasicInformation = ({ word, data = {} }) => {
               language="en-GB"
             />
             <Text className="text-lg font-medium">
-              {wordData.ipaTranscription.UK}
+              {basicInformationData.ipaTranscription.UK ||
+                basicInformationData.ipaTranscription.uk}
             </Text>
           </motion.div>
 
@@ -108,39 +106,43 @@ const BasicInformation = ({ word, data = {} }) => {
               language="en-US"
             />
             <Text className="text-lg font-medium">
-              {wordData.ipaTranscription.US}
+              {basicInformationData.ipaTranscription.US ||
+                basicInformationData.ipaTranscription.us}
             </Text>
           </motion.div>
         </div>
       </Card>
 
-      {wordData.meanings.length > 0 && (
-        <Tabs defaultActiveKey="1" className="mt-6">
-          {wordData.meanings.map((tab) => (
-            <TabPane
-              tab={
-                <span className="font-bold !text-white hover:text-blue-400 transition-colors duration-200">
-                  {tab.label}
-                </span>
-              }
-              key={tab.key}
-            >
-              <Text strong className="!text-white text-xl font-bold mb-4">
-                {tab.meaning}
-              </Text>
-              <ul className="space-y-2 pl-5">
-                {tab.examples.map((ex, i) => (
-                  <li
-                    key={i}
-                    className="text-gray-300 before:content-['•'] before:text-blue-400 before:mr-2"
-                  >
-                    {ex}
-                  </li>
-                ))}
-              </ul>
-            </TabPane>
-          ))}
-        </Tabs>
+      {basicInformationData.meanings.length > 0 && (
+        <Tabs
+          defaultActiveKey="0"
+          tabBarStyle={{ color: "white" }}
+          items={basicInformationData.meanings.map((tab, index) => ({
+            key: String(index),
+            label: (
+              <span className="font-bold text-white hover:text-blue-400 transition">
+                {tab.label}
+              </span>
+            ),
+            children: (
+              <div className="p-5 bg-[#1e1e1e]/50 rounded-lg">
+                <Text
+                  strong
+                  className="text-white text-xl font-bold block mb-2"
+                >
+                  {tab.meaning}
+                </Text>
+                <ul className="pl-5 list-disc text-gray-300 space-y-1">
+                  {tab.examples.map((ex, idx) => (
+                    <li key={idx} className="before:text-blue-400">
+                      {ex}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ),
+          }))}
+        />
       )}
     </motion.div>
   );

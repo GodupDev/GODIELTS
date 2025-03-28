@@ -10,16 +10,17 @@ const levelBorderColors = {
   C2: "border-pink-500 text-pink-500",
 };
 
-const SynonymsAntonyms = ({ word, data }) => {
+const SynonymsAntonyms = ({ listSynonymsAntonymsData }) => {
   const { setSearchedData } = useContext(AppContext);
+  const data = listSynonymsAntonymsData;
 
   if (!data || data.length === 0) {
     return (
       <div className="p-6 bg-[#2e3134]/50 text-white rounded-xl shadow-lg w-full mx-auto">
         <h2 className="text-white text-[25px] font-bold mb-3">
-          Đồng nghĩa & Trái nghĩa
+          SYNONYMS AND ANTONYMS
         </h2>
-        <p className="text-gray-300 text-center">Không có dữ liệu phù hợp.</p>
+        <p className="text-gray-300 text-center">No matching data.</p>
       </div>
     );
   }
@@ -49,7 +50,7 @@ const SynonymsAntonyms = ({ word, data }) => {
             </div>
           ))
         ) : (
-          <p className="text-gray-400 text-sm">Không có</p>
+          <p className="text-gray-400 text-sm">No matching data.</p>
         )}
       </div>
     </div>
@@ -58,11 +59,11 @@ const SynonymsAntonyms = ({ word, data }) => {
   return (
     <div className="p-6 bg-[#2e3134]/50 text-white rounded-xl shadow-lg w-full mx-auto">
       <h2 className="text-white text-[25px] font-bold mb-3">
-        Đồng nghĩa & Trái nghĩa của "{word}"
+        SYNONYMS AND ANTONYMS
       </h2>
       <div className="mt-3 grid grid-cols-2 gap-3">
-        {renderWordList("Từ đồng nghĩa", synonyms, "text-blue-400")}
-        {renderWordList("Từ trái nghĩa", antonyms, "text-orange-400")}
+        {renderWordList("Synonyms", synonyms, "text-blue-400")}
+        {renderWordList("Antonyms", antonyms, "text-orange-400")}
       </div>
     </div>
   );

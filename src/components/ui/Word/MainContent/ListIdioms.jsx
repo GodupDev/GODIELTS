@@ -1,12 +1,11 @@
 import React from "react";
 import IconSound from "../../../icon/IconSound";
 
-const ListIdioms = ({ word, data }) => {
+const ListIdioms = ({ listIdiomsData }) => {
+  const data = listIdiomsData;
   return (
     <div className="bg-[#2e3134]/50 p-6 rounded-xl shadow-lg w-full mx-auto">
-      <h2 className="text-white text-[25px] font-bold mb-4 pb-2">
-        Thành ngữ với <span className="text-[#79b8f3]">{word}</span>
-      </h2>
+      <h2 className="text-white text-[25px] font-bold mb-4 pb-2">IDIOM</h2>
       <div className="space-y-4">
         {data.map((item, index) => (
           <div key={index} className="bg-[#1e1e1e] p-4 rounded-lg">

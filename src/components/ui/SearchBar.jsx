@@ -10,14 +10,17 @@ const SearchBar = ({ hiddenClear = true }) => {
   const { setSearchedData, searchedData, setCurrentPage, currentPage } =
     useContext(AppContext);
 
+  const capitalizeFirstLetter = (text) => {
+    if (!text || typeof text !== "string") return "";
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  };
+
   const handleSearch = (value) => {
-    const formattedValue = value
-      .trim()
-      .replace(/(^\w|\s\w)/g, (match) => match.toUpperCase());
-    if (["/", "/Dictionary"].includes(currentPage)) {
+    const formattedValue = capitalizeFirstLetter(value);
+
+    if (["/"].includes(currentPage)) {
       setCurrentPage("/Dictionary");
     }
-    console.log(currentPage);
     setSearchedData(formattedValue);
   };
 

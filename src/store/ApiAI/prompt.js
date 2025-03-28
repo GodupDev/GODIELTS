@@ -11,6 +11,10 @@ const getPromptWordData = (word) => {
   return `
     Imagine you are a highly accurate, detailed Cambridge dictionary. Generate a JSON object that provides a comprehensive analysis of the English word "${word}" for IELTS preparation. The JSON should include:
   
+<<<<<<< HEAD
+=======
+    -**"word"**: "${word}".
+>>>>>>> e9703c6 (1.12 fix dictionary logic)
     - **"level"**: The CEFR level of the word (A1, A2, B1, B2, C1, C2).
     - **"type"**: The grammatical category of the word (e.g., "verb", "noun", "adjective", "adverb", "preposition").
     - **"generalDescription"**: A short yet comprehensive description of the word, including its meaning and any differences between British and American English.
