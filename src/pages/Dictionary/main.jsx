@@ -45,6 +45,8 @@ const Dictionary = () => {
   useEffect(() => {
     if (searchedData?.trim()) {
       debouncedAnalyze(searchedData);
+    } else {
+      setLoading(false);
     }
   }, [searchedData]); // Removed debouncedAnalyze from dependencies (already memoized)
 
