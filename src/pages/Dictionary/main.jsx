@@ -4,7 +4,7 @@ import LoadingState from "../../components/ui/shared/LoadingState";
 import { debounce } from "lodash";
 import { AppContext } from "../../store/AppContext";
 import { fetchDataTypeOfText } from "../../utils/dataUtils";
-import { getData, auth } from "../../store/services/firebase";
+import { addData, getData, auth } from "../../store/services/firebase";
 import { Alert } from "antd";
 
 import TemplateForWord from "./TemplateForWord";
@@ -18,18 +18,21 @@ const fadeVariants = {
 
 const Dictionary = () => {
   const [checkTypeOfSearchedData, setCheckTypeOfSearchedData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const {
-    favouriteWords,
-    setFavouriteWords,
+    favoriteWords,
+    setFavoriteWords,
     user,
     setSearchedData,
     searchedData,
   } = useContext(AppContext);
 
+  // Debounced function for analyzing input text
   const debouncedAnalyze = useRef(
     debounce(async (text) => {
+      if (!text?.trim()) return; // Prevent unnecessary API calls
       await fetchDataTypeOfText(
         text,
         setLoading,
@@ -40,37 +43,31 @@ const Dictionary = () => {
   ).current;
 
   useEffect(() => {
-    debouncedAnalyze(searchedData);
-  }, [searchedData]);
+    if (searchedData?.trim()) {
+      debouncedAnalyze(searchedData);
+    }
+  }, [searchedData]); // Removed debouncedAnalyze from dependencies (already memoized)
 
   useEffect(() => {
-    if (user) getFavouriteWord();
-  }, [favouriteWords]);
+    const fetchData = async () => {
+      if (!auth.currentUser) return;
 
-  const getFavouriteWord = useCallback(async () => {
-    if (user && auth.currentUser) {
-      setLoading(true); // Set loading to true before fetching data.
-      setError(null); // Reset error state.
       try {
         const data = await getData(`userData/${auth.currentUser.uid}`);
-        setFavouriteWords(data.list || []);
+        if (data?.list) {
+          setFavoriteWords(data.list);
+        } else {
+          await addData(`userData/${auth.currentUser.uid}`, { list: [] });
+        }
       } catch (err) {
-        setError(err.message || "Failed to fetch favorite words.");
+        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
-    }
-  }, [user, setFavouriteWords]);
+    };
 
-  useEffect(() => {
-    if (searchedData) {
-      debouncedAnalyze(searchedData);
-    }
-  }, [searchedData, debouncedAnalyze]);
-
-  useEffect(() => {
-    if (user) getFavouriteWord();
-  }, [user, getFavouriteWord]);
+    fetchData();
+  }, [user, setFavoriteWords]);
 
   if (error) {
     return (
@@ -84,31 +81,31 @@ const Dictionary = () => {
     <AnimatePresence mode="wait">
       <motion.div
         key={searchedData || "empty"}
-        className="overflow-x-hidden px-4 sm:px-6 w-full"
+        className="overflow-x-hidden !px-2 w-full max-w-screen-xl mx-auto"
         variants={fadeVariants}
         initial="hidden"
         animate="visible"
         exit="exit"
       >
         {loading ? (
-          <div className="w-full flex justify-center py-12">
+          <div className="w-full flex justify-center">
             <LoadingState tip="Analyzing input..." />
           </div>
         ) : !searchedData?.trim() ? (
           <motion.div
-            className="w-full flex flex-col items-center py-12"
+            className="w-full flex flex-col items-center"
             variants={fadeVariants}
           >
             <span className="text-base sm:text-lg text-gray-400 mb-6">
-              Enter a word or sentence to get started
+              Enter a word or sentence in the search bar.
             </span>
-            {favouriteWords.length > 0 && auth && (
+            {favoriteWords.length > 0 && (
               <div className="w-full max-w-1xl">
                 <h3 className="text-lg font-semibold mb-4">
                   Your Favorited Words
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  {Array.from(new Set(favouriteWords)).map((word, index) => (
+                  {Array.from(new Set(favoriteWords)).map((word, index) => (
                     <button
                       key={index}
                       className="px-6 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 text-white text-lg font-semibold rounded-2xl shadow-xl border border-blue-700 hover:from-indigo-500 hover:to-blue-500 hover:shadow-2xl transition-all duration-300 ease-in-out transform active:scale-90 cursor-pointer"

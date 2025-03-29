@@ -47,7 +47,6 @@ const ProfileModal = ({ visible, onCancel }) => {
     };
   }, [imageFile]);
 
-  console.log(form.getFieldsValue());
   const handleSubmit = async (values) => {
     try {
       setLoading(true);

@@ -57,18 +57,20 @@ const TemplateForWord = () => {
   }
 
   return (
-    <div>
+    <div className="min-h-screen w-full flex justify-center">
       <motion.div
-        className="min-h-screen w-full flex justify-center "
+        className="w-full flex justify-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="flex flex-col lg:grid lg:grid-cols-[1fr_400px] gap-2 w-full max-w-screen-xl px-4">
-          <motion.div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg p-4 sm:p-6 max-w-[120vh] w-full h-full">
+        <div className="flex flex-col gap-4 w-full max-w-screen-xl lg:grid lg:grid-cols-[1fr_400px]">
+          {/* Nội dung chính */}
+          <motion.div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg p-4 sm:p-6 max-w-full w-full h-full">
             <MainContentWord wordData={wordData} />
           </motion.div>
 
+          {/* Thông tin bổ sung */}
           <motion.div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl shadow-lg p-4 sm:p-6 w-full h-full">
             <AdditionalInformation word={word} data={wordData} />
           </motion.div>

@@ -131,7 +131,7 @@ const PostCard = ({ post, isDelete = false, isEdit = false }) => {
               <Image
                 src={post.image.url}
                 alt="Post"
-                className="rounded-xl w-full max-h-[200px] sm:max-h-96 object-cover"
+                className="rounded-xl w-full max-h-3.5 sm:max-h-96 object-cover"
                 fallback="https://via.placeholder.com/150"
                 preview={{ mask: "Click to enlarge" }}
               />
@@ -174,7 +174,7 @@ const PostCard = ({ post, isDelete = false, isEdit = false }) => {
 
         {/* Comments */}
         {showComments && (
-          <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-gray-700 pt-4 md:pl-4 overflow-auto max-h-96">
+          <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-gray-700 pt-4 md:pl-4 overflow-auto max-h-full">
             <CommentSection
               comments={post.comments}
               onAddComment={handleAddComment}

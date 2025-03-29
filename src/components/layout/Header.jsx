@@ -18,7 +18,13 @@ import dayjs from "dayjs";
 
 // Context and Firebase services
 import { AppContext } from "../../store/AppContext";
-import { logout, getData, addData, auth } from "../../store/services/firebase";
+import {
+  logout,
+  getData,
+  addData,
+  auth,
+  db,
+} from "../../store/services/firebase";
 
 // UI Components and Ant Design
 import { Image, Menu, Tooltip, message, Button, Dropdown } from "antd";
@@ -31,6 +37,8 @@ import IconUser from "../icon/IconUser";
 import IconLanguage from "../icon/IconLanguage";
 import AuthModals from "../modals/AuthModals";
 import ProfileModal from "../modals/ProfileModals";
+
+import { collection, onSnapshot, doc, getDoc } from "firebase/firestore";
 
 // Navigation menu items
 const menuItems = [
@@ -81,16 +89,42 @@ const Header = () => {
     setSearchedData,
   } = useContext(AppContext);
 
+  useEffect(() => {
+    const docRef = doc(db, "severData", "postsData");
+
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        console.log("🔥 Dữ liệu cập nhật:", docSnap.data());
+        setPostsData(docSnap.data().postsData || []);
+      } else {
+        console.log("❌ Không tìm thấy dữ liệu!");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const docRef = doc(db, "severData", "tipsData");
+
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        console.log("🔥 Dữ liệu cập nhật:", docSnap.data());
+        setTipsData(docSnap.data().tipsData || []);
+      } else {
+        console.log("❌ Không tìm thấy dữ liệu!");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   // Profile data management functions
   const fetchProfileData = useCallback(async (user, setProfile) => {
-    const profileData = await getData(`usersProfile/${user.uid}`);
-    const posts = await getData("severData/postsData");
-    setPostsData(posts.postsData ? posts.postsData : []);
-    const tips = await getData("severData/tipsData");
-    setTipsData(tips.tipsData ? tips.tipsData : []);
-
     if (!user) return;
     try {
+      const profileData = await getData(`usersProfile/${user.uid}`);
+
       if (profileData && Object.keys(profileData).length > 0) {
         setProfile({ ...profileData });
       } else {
@@ -503,12 +537,14 @@ const Header = () => {
                               {item.label}
                             </div>
                           ))}
-                          <div
-                            onClick={() => showLogin()}
-                            className="block px-4 py-2 hover:bg-gray-700 cursor-pointer text-blue-500 font-semibold"
-                          >
-                            Login
-                          </div>
+                          {!user && (
+                            <div
+                              onClick={() => showLogin()}
+                              className="block px-4 py-2 hover:bg-gray-700 cursor-pointer text-blue-500 font-semibold"
+                            >
+                              Login
+                            </div>
+                          )}
                         </div>
                       )}
                     </span>

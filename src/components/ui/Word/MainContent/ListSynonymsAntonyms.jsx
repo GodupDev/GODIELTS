@@ -41,7 +41,7 @@ const SynonymsAntonyms = ({ listSynonymsAntonymsData }) => {
             >
               {word}
               <span
-                className={`px-2 py-1 text-xs font-bold border rounded-md ${
+                className={`px-2 py-1 text-xs font-bold border rounded-b-sm ${
                   levelBorderColors[level] || "border-gray-500 text-gray-500"
                 }`}
               >

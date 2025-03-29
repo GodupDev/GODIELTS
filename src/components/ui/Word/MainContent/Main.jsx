@@ -46,16 +46,19 @@ export const MainContentWord = ({ wordData = {} }) => {
   ];
 
   return (
-    <div className="w-full flex flex-col gap-5">
+    <div className="w-full flex flex-col gap-5 px-2 sm:px-4 max-w-screen-lg mx-auto">
       <BasicInformation basicInformationData={basicInformationData} />
       <Tabs
-        defaultActiveKey="1"
+        defaultActiveKey="wordForms"
         className="custom-tabs text-white"
         items={tabItems.map(({ key, label, component }) => ({
           key,
           label: <span>{label}</span>,
           children: component,
         }))}
+        tabBarGutter={16}
+        size="large"
+        tabPosition="top"
       />
     </div>
   );

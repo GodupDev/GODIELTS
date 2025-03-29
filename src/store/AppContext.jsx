@@ -8,7 +8,7 @@ export const AppProvider = ({ children }) => {
   const [theme, setTheme] = useState("dark");
   const [searchedData, setSearchedData] = useState("");
   const [currentLanguage, setCurrentLanguage] = useState("en-US");
-  const [favouriteWords, setFavouriteWords] = useState([]);
+  const [favoriteWords, setFavoriteWords] = useState([]);
   const [postsData, setPostsData] = useState([]);
   const [tipsData, setTipsData] = useState([]);
   const [currentPage, setCurrentPage] = useState("/");
@@ -34,8 +34,8 @@ export const AppProvider = ({ children }) => {
         setSearchedData,
         currentLanguage,
         setCurrentLanguage,
-        favouriteWords,
-        setFavouriteWords,
+        favoriteWords,
+        setFavoriteWords,
         postsData,
         setPostsData,
         tipsData,
