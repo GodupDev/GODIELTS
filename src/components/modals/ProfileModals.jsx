@@ -60,17 +60,16 @@ const ProfileModal = ({ visible, onCancel }) => {
         displayName: formattedValues.displayName,
       });
 
-      // Upload image if selected
-      let avatarUrl = profile?.avatar?.url || "";
+      let avatar = {};
       if (imageFile) {
-        avatarUrl = await uploadImage(imageFile);
+        avatar = await uploadImage(imageFile);
       }
 
       // Final profile data to update both Database and AppContext
       const updatedProfile = {
         ...profile,
         ...formattedValues,
-        avatar: { url: avatarUrl },
+        avatar,
       };
 
       // Update Database

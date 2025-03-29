@@ -324,6 +324,8 @@ const Header = () => {
     />
   );
 
+  console.log(profile.avatar.url);
+
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
